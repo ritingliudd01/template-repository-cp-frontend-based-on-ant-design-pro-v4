@@ -1,0 +1,21 @@
+// hk01:login:language
+export default {
+  'login.error': '登錄失敗',
+  'login.fail': '去登錄',
+  'login.loging': '登錄中...',
+  'login.again': '重新登陸',
+  'login.tip': '提示',
+  'login.welcome': '歡迎回來，正在載入頁面...',
+  'login.tips': '您未登錄或登錄失效，將使用google賬戶進行登錄！',
+  'app.login.userName': '賬戶',
+  'app.login.password': '密碼',
+  'app.login.message-invalid-credentials': '賬戶或密碼錯誤（admin/ant.design）',
+  'app.login.message-invalid-verification-code': '驗證碼錯誤',
+  'app.login.tab-login-credentials': '賬戶密碼登錄',
+  'app.login.tab-login-mobile': '手機號登錄',
+  'app.login.remember-me': '自動登錄',
+  'app.login.forgot-password': '忘記密碼',
+  'app.login.sign-in-with': '其他登錄方式',
+  'app.login.signup': '註冊賬戶',
+  'app.login.login': '登錄',
+};

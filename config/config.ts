@@ -4,28 +4,20 @@ import defaultSettings from './defaultSettings';
 import proxySettings from './proxy';
 const readTextFile = require('read-text-file');
 
-const { ENV } = process.env;
-
 // hk01:config:env: import env settings and inject them into process.env
-const envDevelopment = readTextFile.readSync(`${__dirname}/../.env.development`);
-const envStaging = readTextFile.readSync(`${__dirname}/../.env.staging`);
-const envProduction = readTextFile.readSync(`${__dirname}/../.env.production`);
-
 const text2json = (text: string) => {
-  let ret = `{"${text.trim().replace(/=/gi, '":"').replace(/\n/gi, '","').replace(/\//gi, '\/')}"}`;
-  //console.log(ret)
-  //ret = `{${ret.substr(0, ret.length - 2)}}`;
+  let ret = `{"${text
+    .trim()
+    .replace(/=/gi, '":"')
+    .replace(/\n/gi, '","')
+    .replace(/\//gi, "/")}"}`;
   return JSON.parse(ret);
-}
-
-const envs = {
-  development: text2json(envDevelopment),
-  staging: text2json(envStaging),
-  production: text2json(envProduction)
 };
+const envDevelopment = readTextFile.readSync(".env");
+const ENV = text2json(envDevelopment);
 
 // hk01:config:proxy: update proxy's target with env's API_URL for local development only
-const PROXY_TARGET = envs.development.API_URL;
+const PROXY_TARGET = ENV.API_URL;
 const API_VERSION = defaultSettings.apiVersion;
 const proxy = proxySettings['development'];
 proxy[API_VERSION].target = PROXY_TARGET;
@@ -136,8 +128,7 @@ export default defineConfig({
       // hk01:config:env: process.env
       // GITHUB_REPO_NAME used as namespace for localStorage items
       GITHUB_REPO_NAME:'partner-cp',
-      ENV: ENV || 'development', // 默认为本地开发环境
-      ...envs[ENV || 'development'],
+      ...ENV,
     },
   },
   chainWebpack: config => {

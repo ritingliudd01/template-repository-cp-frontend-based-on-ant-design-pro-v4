@@ -15,6 +15,9 @@ A turnkey frontend Control Panel(CP) template repo for HK01 internal use.
 - And Design Pro v4: https://pro.ant.design/
   - UMI: https://umijs.org/
 - Formily: https://formilyjs.org/
+- React Hooks: https://github.com/streamich/react-use
+- Ramda: https://ramdajs.com/
+
 
 ## Features of Ant Design Pro v4:
 

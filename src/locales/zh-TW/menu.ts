@@ -49,4 +49,9 @@ export default {
   'menu.editor.flow': '流程編輯器',
   'menu.editor.mind': '腦圖編輯器',
   'menu.editor.koni': '拓撲編輯器',
+
+  'menu.formily': '表单 Formily',
+  'menu.formily.linked': '复杂联动',
+  'menu.formily.linked.one2many': '一对多',
+  'menu.formily.linked.many2one': '多对一',
 };

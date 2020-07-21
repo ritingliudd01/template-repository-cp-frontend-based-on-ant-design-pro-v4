@@ -5,6 +5,7 @@ import pwa from './zh-TW/pwa';
 import settingDrawer from './zh-TW/settingDrawer';
 import settings from './zh-TW/settings';
 import home from './zh-TW/home';
+import formily from './zh-TW/formily';
 
 export default {
   'navBar.lang': '語言',
@@ -19,4 +20,5 @@ export default {
   ...pwa,
   ...component,
   ...home,
+  ...formily,
 };

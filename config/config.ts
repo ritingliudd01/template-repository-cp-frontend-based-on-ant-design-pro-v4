@@ -98,6 +98,29 @@ export default defineConfig({
               component: './ListTableList',
             },
             {
+              path: '/formily',
+              name: 'formily',
+              icon: 'edit',
+              routes: [
+                {
+                  path: '/formily/linked',
+                  name: 'linked',
+                  routes: [
+                    {
+                      path: '/formily/linked/one2many',
+                      name: 'one2many',
+                      component: './formily/linked/one2many',
+                    },
+                    {
+                      path: '/formily/linked/many2one',
+                      name: 'many2one',
+                      component: './formily/linked/many2one',
+                    },
+                  ]
+                },
+              ],
+            },
+            {
               component: './404',
             },
           ],

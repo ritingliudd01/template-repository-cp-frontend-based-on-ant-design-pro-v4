@@ -1,6 +1,6 @@
 // hk01:pages:formily: various form demos
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, } from 'antd';
+import { Card, Typography, Button} from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { useIntl } from 'umi';
 import Printer from '@formily/printer';
@@ -15,7 +15,8 @@ import {
   FormEffectHooks,
   setValidationLocale,
   InternalFieldList as FieldList,
-  createFormActions
+  createFormActions,
+  FormSpy,
 } from '@formily/antd';
 import {
   Input,
@@ -65,23 +66,21 @@ const components = {
   Transfer
 }
 
+const { onFieldValueChange$ } = FormEffectHooks
+
+const useOneToManyEffects = () => {
+  const { setFieldState } = createFormActions()
+  onFieldValueChange$('aa').subscribe(({ value }) => {
+    setFieldState('*(bb,cc,dd)', state => {
+      state.visible = value
+    })
+  })
+}
+
+const actions = createFormActions()
+
 export default (): React.ReactNode => {
   const { formatMessage } = useIntl();
-  const { onFieldValueChange$ } = FormEffectHooks
-
-  const useManyToOneEffects = () => {
-    const { setFieldState } = createFormActions()
-    onFieldValueChange$('bb').subscribe(({ value }) => {
-      setFieldState('aa', state => {
-        state.visible = value
-      })
-    })
-    onFieldValueChange$('cc').subscribe(({ value }) => {
-      setFieldState('aa', state => {
-        state.value = value
-      })
-    })
-  }
 
   return (
     <PageHeaderWrapper>
@@ -89,12 +88,11 @@ export default (): React.ReactNode => {
         <Printer>
           <SchemaForm
             components={components}
-            onSubmit={values => {
-              console.log(values)
+            actions={actions}
+            effects={() => {
+              useOneToManyEffects()
             }}
-            effects={useManyToOneEffects}
           >
-            <Field type="string" name="aa" title="AA" x-component="Input" />
             <Field
               type="string"
               enum={[
@@ -102,22 +100,45 @@ export default (): React.ReactNode => {
                 { label: 'hidden', value: false }
               ]}
               default={false}
-              name="bb"
-              title="BB"
+              name="aa"
+              title="AA"
               x-component="Select"
             />
+            <Field type="string" name="bb" title="BB" x-component="Input" />
             <Field type="string" name="cc" title="CC" x-component="Input" />
+            <Field type="string" name="dd" title="DD" x-component="Input" />
             <FormButtonGroup>
-              <Submit />
+              <FormSpy selector={[['onFieldValueChange', 'aa']]}>
+                {({ state }) => {
+                  return (
+                    state.value && (
+                      <>
+                        <Submit />
+                        <Button
+                          onClick={() => {
+                            actions.setFieldState('bb', state => {
+                              state.value = '' + Math.random()
+                            })
+                          }}
+                        >
+                          修改BB的值
+                        </Button>
+                        <Reset />
+                      </>
+                    )
+                  )
+                }}
+              </FormSpy>
             </FormButtonGroup>
-          </SchemaForm>
+            </SchemaForm>
         </Printer>
       </Card>
 
       <Card title={formatMessage({ id: 'formily.demo.intro' })}>
         <Paragraph>
-          <ul className="react-demo-ul"><li className="react-demo-li">多對一聯動其實就是一對一聯動，只不過作用的對像是同一個字段</li><li className="react-demo-li">BB 控制AA ​​顯示隱藏，CC 控制AA ​​的值</li></ul>
+          <ul className="react-demo-ul"><li className="react-demo-li">主聯動邏輯是一對多聯動</li><li className="react-demo-li">借助FormSpy可以針對具體字段做監聽，所以可以很方便的做UI 聯動狀態同步</li><li className="react-demo-li">借助FormActions 可以方便的在外部操作Form 內部狀態</li></ ul>
         </Paragraph>
       </Card>
-  </PageHeaderWrapper>
-)};
+    </PageHeaderWrapper>
+  )
+};

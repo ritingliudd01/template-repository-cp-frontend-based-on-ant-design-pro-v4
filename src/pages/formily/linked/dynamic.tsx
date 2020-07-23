@@ -65,48 +65,67 @@ const components = {
   Transfer
 }
 
+const { onFieldValueChange$ } = FormEffectHooks
+
+const mockSchema = {
+  type: 'object',
+  properties: {
+    aa: {
+      type: 'boolean',
+      enum: [
+        { label: 'visible', value: true },
+        { label: 'hidden', value: false }
+      ],
+      default: false,
+      title: 'AA',
+      'x-component': 'Select',
+      'x-linkages': [
+        {
+          type: 'value:visible',
+          target: '*(bb,cc,dd)',
+          condition: '{{!!$value}}'
+        }
+      ]
+    },
+    bb: {
+      type: 'string',
+      title: 'BB',
+      'x-component': 'Input'
+    },
+    cc: {
+      type: 'string',
+      title: 'CC',
+      'x-component': 'Input'
+    },
+    dd: {
+      type: 'string',
+      title: 'DD',
+      'x-component': 'Input'
+    }
+  }
+}
+
 export default (): React.ReactNode => {
   const { formatMessage } = useIntl();
-  const { onFieldValueChange$ } = FormEffectHooks
-
-  const useManyToOneEffects = () => {
-    const { setFieldState } = createFormActions()
-    onFieldValueChange$('bb').subscribe(({ value }) => {
-      setFieldState('aa', state => {
-        state.visible = value
-      })
-    })
-    onFieldValueChange$('cc').subscribe(({ value }) => {
-      setFieldState('aa', state => {
-        state.value = value
-      })
-    })
-  }
-
+  const [ schema, setSchema] = useState({
+    type: 'object'
+  })
+  useEffect(() => {
+    setTimeout(() => {
+      setSchema(mockSchema)
+    }, 1000)
+  }, [])
   return (
     <PageHeaderWrapper>
       <Card>
         <Printer>
           <SchemaForm
+            schema={schema}
             components={components}
             onSubmit={values => {
               console.log(values)
             }}
-            effects={useManyToOneEffects}
           >
-            <Field type="string" name="aa" title="AA" x-component="Input" />
-            <Field
-              type="string"
-              enum={[
-                { label: 'visible', value: true },
-                { label: 'hidden', value: false }
-              ]}
-              default={false}
-              name="bb"
-              title="BB"
-              x-component="Select"
-            />
-            <Field type="string" name="cc" title="CC" x-component="Input" />
             <FormButtonGroup>
               <Submit />
             </FormButtonGroup>
@@ -116,8 +135,9 @@ export default (): React.ReactNode => {
 
       <Card title={formatMessage({ id: 'formily.demo.intro' })}>
         <Paragraph>
-          <ul className="react-demo-ul"><li className="react-demo-li">多對一聯動其實就是一對一聯動，只不過作用的對像是同一個字段</li><li className="react-demo-li">BB 控制AA ​​顯示隱藏，CC 控制AA ​​的值</li></ul>
+          <ul className="react-demo-ul"><li className="react-demo-li">借助 x-linkages 可以實現簡單的聯動效果</li><li className="react-demo-li"> target 是一個 FormPathPattern 匹配表達式，在這裡我們可以使用FormPath 的各種匹配語法</li></ul>
         </Paragraph>
       </Card>
-  </PageHeaderWrapper>
-)};
+    </PageHeaderWrapper>
+  )
+};

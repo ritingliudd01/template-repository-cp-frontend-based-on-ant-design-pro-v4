@@ -68,6 +68,8 @@
     "@formily/antd": "^1.2.8",
     "@formily/antd-components": "^1.2.8",
     "@formily/printer": "^1.2.8",
+    "@formily/react-shared-components": "^1.2.8",
+    "@formily/shared": "^1.2.8",
     "@types/ramda": "^0.27.11",
     "antd": "^4.4.0",
     "base64-utf8": "^0.1.8",

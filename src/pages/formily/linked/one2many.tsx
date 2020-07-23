@@ -81,7 +81,7 @@ export default (): React.ReactNode => {
 
   return (
     <PageHeaderWrapper>
-      <Card title="">
+      <Card>
         <Printer>
           <SchemaForm
             components={components}
@@ -115,8 +115,7 @@ export default (): React.ReactNode => {
 
       <Card title={formatMessage({ id: 'formily.demo.intro' })}>
         <Paragraph>
-          <ul className="react-demo-ul"><li className="react-demo-li">使用 FormEffectHooks 可以很方便的将联动逻辑拆分出去，方便我们进行物理分离</li><li className="react-demo-li">借助路径系统的批量匹配能力实现一对多联动</li></ul>
-        </Paragraph>
+          <ul className="react-demo-ul"><li className="react-demo-li">使用FormEffectHooks 可以很方便的將聯動邏輯拆分出去，方便我們進行物理分離</li><li className="react-demo-li">借助路徑系統的批量匹配能力實現一對多聯動</li></ul>        </Paragraph>
       </Card>
   </PageHeaderWrapper>
 )};

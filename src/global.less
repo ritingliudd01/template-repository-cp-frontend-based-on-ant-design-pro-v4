@@ -1,5 +1,5 @@
 @import '~antd/es/style/themes/default.less';
-// @import '~antd/lib//style/index.less';
+
 @import '~antd/lib/checkbox/style/index.less';
 @import '~antd/lib/input/style/index.less';
 @import '~antd/lib/form/style/index.less';
@@ -11,7 +11,7 @@
 @import '~antd/lib/date-picker/style/index.less';
 @import '~antd/lib/input-number/style/index.less';
 @import '~antd/lib/steps/style/index.less';
-//@import '~antd/lib/button/style/index.less';
+@import '~antd/lib/badge/style/index.less';
 
 html,
 body,
@@ -79,8 +79,8 @@ div + .ant-card{
 }
 
 .ant-form-item-control-input-content{
-  .ant-table{
-    //margin-bottom: 16px;
+  .text-box-words {
+    white-space: nowrap;
   }
   .ant-empty,.ant-table-empty, thead{
     display: none;
@@ -129,5 +129,11 @@ div + .ant-card{
   width: 100%;
   .ant-row{
     justify-content: center;
+  }
+}
+
+.ant-form-inline{
+  .ant-form-item{
+    margin-bottom: 16px;
   }
 }

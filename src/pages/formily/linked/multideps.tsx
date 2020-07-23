@@ -13,6 +13,7 @@ import {
   Form,
   FormItem,
   FormEffectHooks,
+  createEffectHook,
   setValidationLocale,
   InternalFieldList as FieldList,
   createFormActions
@@ -41,6 +42,7 @@ import {
   FormGridCol,
   FormGridRow
 } from '@formily/antd-components';
+import { combineLatest } from 'rxjs/operators';
 
 const { Paragraph } = Typography
 
@@ -65,46 +67,70 @@ const components = {
   Transfer
 }
 
+const { onFieldValueChange$, onFormMount$ } = FormEffectHooks
+
+const customEvent$ = createEffectHook('CUSTOM_EVENT')
+
+const useMultiDepsEffects = () => {
+  const { setFieldState, dispatch } = createFormActions()
+
+  onFormMount$().subscribe(() => {
+    setTimeout(() => {
+      dispatch('CUSTOM_EVENT', true)
+    }, 3000)
+  })
+
+  onFieldValueChange$('aa')
+    .pipe(combineLatest(customEvent$()))
+    .subscribe(([{ value, values }, visible]) => {
+
+      setFieldState('bb', state => {
+        state.visible = visible
+      })
+
+      setFieldState('cc', state => {
+        state.visible = value
+        if (values[1] && values[1].otherinfo) {
+          state.value = values[1].otherinfo
+        }
+      })
+    })
+}
+
+
 export default (): React.ReactNode => {
   const { formatMessage } = useIntl();
-  const { onFieldValueChange$ } = FormEffectHooks
-
-  const useManyToOneEffects = () => {
-    const { setFieldState } = createFormActions()
-    onFieldValueChange$('bb').subscribe(({ value }) => {
-      setFieldState('aa', state => {
-        state.visible = value
-      })
-    })
-    onFieldValueChange$('cc').subscribe(({ value }) => {
-      setFieldState('aa', state => {
-        state.value = value
-      })
-    })
-  }
 
   return (
     <PageHeaderWrapper>
-      <Card>
+      <Card title="">
         <Printer>
           <SchemaForm
             components={components}
             onSubmit={values => {
               console.log(values)
             }}
-            effects={useManyToOneEffects}
+            effects={() => {
+              useMultiDepsEffects()
+            }}
           >
-            <Field type="string" name="aa" title="AA" x-component="Input" />
             <Field
               type="string"
               enum={[
-                { label: 'visible', value: true },
-                { label: 'hidden', value: false }
+                { label: 'visible', value: true, otherinfo: '123' },
+                { label: 'hidden', value: false, otherinfo: '321' }
               ]}
               default={false}
-              name="bb"
-              title="BB"
+              name="aa"
+              title="AA"
               x-component="Select"
+            />
+            <Field
+              type="string"
+              name="bb"
+              visible={false}
+              title="BB"
+              x-component="Input"
             />
             <Field type="string" name="cc" title="CC" x-component="Input" />
             <FormButtonGroup>
@@ -116,8 +142,9 @@ export default (): React.ReactNode => {
 
       <Card title={formatMessage({ id: 'formily.demo.intro' })}>
         <Paragraph>
-          <ul className="react-demo-ul"><li className="react-demo-li">多對一聯動其實就是一對一聯動，只不過作用的對像是同一個字段</li><li className="react-demo-li">BB 控制AA ​​顯示隱藏，CC 控制AA ​​的值</li></ul>
+          <ul className="react-demo-ul"><li className="react-demo-li">Field 組件visible 屬性可以控制初始顯示狀態</li><li className="react-demo-li">BB的顯示受外部異步事件所控制</li><li className="react-demo-li">CC 的顯示隱藏狀態受AA 的值控制，CC 的值受AA 的附加信息所控制，同時整體聯動依賴一個外部異步事件</li><li className="react-demo-li">使用rxjs 操作符combineLatest 可以解決聯動異步依賴問題</li></ul>
         </Paragraph>
       </Card>
-  </PageHeaderWrapper>
-)};
+    </PageHeaderWrapper>
+  )
+};

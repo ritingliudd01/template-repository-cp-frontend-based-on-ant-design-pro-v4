@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Typography, } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { useIntl } from 'umi';
+import { merge } from 'rxjs';
 import Printer from '@formily/printer';
 import {
   SchemaForm,
@@ -65,48 +66,34 @@ const components = {
   Transfer
 }
 
+const { onFieldValueChange$, onFormSubmitStart$ } = FormEffectHooks
+
+const useValidator = (name:any, validator:any) => {
+  const { setFieldState } = createFormActions()
+  merge(onFieldValueChange$(name), onFormSubmitStart$()).subscribe(() => {
+    setFieldState(name, state => {
+      state.errors = validator(state.value, state)
+    })
+  })
+}
+
 export default (): React.ReactNode => {
   const { formatMessage } = useIntl();
-  const { onFieldValueChange$ } = FormEffectHooks
-
-  const useManyToOneEffects = () => {
-    const { setFieldState } = createFormActions()
-    onFieldValueChange$('bb').subscribe(({ value }) => {
-      setFieldState('aa', state => {
-        state.visible = value
-      })
-    })
-    onFieldValueChange$('cc').subscribe(({ value }) => {
-      setFieldState('aa', state => {
-        state.value = value
-      })
-    })
-  }
 
   return (
     <PageHeaderWrapper>
       <Card>
         <Printer>
           <SchemaForm
-            components={components}
+            components={{ Input, Select }}
             onSubmit={values => {
               console.log(values)
             }}
-            effects={useManyToOneEffects}
+            effects={() => {
+              useValidator('aa', (value:any) => (!value ? '必填字段' : ''))
+            }}
           >
             <Field type="string" name="aa" title="AA" x-component="Input" />
-            <Field
-              type="string"
-              enum={[
-                { label: 'visible', value: true },
-                { label: 'hidden', value: false }
-              ]}
-              default={false}
-              name="bb"
-              title="BB"
-              x-component="Select"
-            />
-            <Field type="string" name="cc" title="CC" x-component="Input" />
             <FormButtonGroup>
               <Submit />
             </FormButtonGroup>
@@ -116,8 +103,9 @@ export default (): React.ReactNode => {
 
       <Card title={formatMessage({ id: 'formily.demo.intro' })}>
         <Paragraph>
-          <ul className="react-demo-ul"><li className="react-demo-li">多對一聯動其實就是一對一聯動，只不過作用的對像是同一個字段</li><li className="react-demo-li">BB 控制AA ​​顯示隱藏，CC 控制AA ​​的值</li></ul>
+          <ul><li>自己聯動自己</li></ul>
         </Paragraph>
       </Card>
-  </PageHeaderWrapper>
-)};
+    </PageHeaderWrapper>
+  )
+};

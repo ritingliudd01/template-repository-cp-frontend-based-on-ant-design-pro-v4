@@ -48,6 +48,7 @@ const components = {
   Input,
   Radio: Radio.Group,
   Checkbox: Checkbox.Group,
+  CheckboxSingle: Checkbox,
   TextArea: Input.TextArea,
   NumberPicker,
   Select,
@@ -67,48 +68,24 @@ const components = {
 
 export default (): React.ReactNode => {
   const { formatMessage } = useIntl();
-  const { onFieldValueChange$ } = FormEffectHooks
-
-  const useManyToOneEffects = () => {
-    const { setFieldState } = createFormActions()
-    onFieldValueChange$('bb').subscribe(({ value }) => {
-      setFieldState('aa', state => {
-        state.visible = value
-      })
-    })
-    onFieldValueChange$('cc').subscribe(({ value }) => {
-      setFieldState('aa', state => {
-        state.value = value
-      })
-    })
-  }
 
   return (
     <PageHeaderWrapper>
       <Card>
         <Printer>
-          <SchemaForm
-            components={components}
-            onSubmit={values => {
-              console.log(values)
-            }}
-            effects={useManyToOneEffects}
-          >
-            <Field type="string" name="aa" title="AA" x-component="Input" />
-            <Field
-              type="string"
-              enum={[
-                { label: 'visible', value: true },
-                { label: 'hidden', value: false }
-              ]}
-              default={false}
-              name="bb"
-              title="BB"
-              x-component="Select"
-            />
-            <Field type="string" name="cc" title="CC" x-component="Input" />
-            <FormButtonGroup>
-              <Submit />
+          <SchemaForm components={{ Input }} onSubmit={v => console.log(v)}>
+            <FormItemGrid gutter={20}>
+              <Field type="string" name="a1" title="查询字段1" x-component="Input" />
+              <Field type="string" name="a2" title="查询字段2" x-component="Input" />
+              <Field type="string" name="a3" title="查询字段3" x-component="Input" />
+              <Field type="string" name="a4" title="查询字段4" x-component="Input" />
+            </FormItemGrid>
+            <FormItemGrid gutter={20} cols={[6, 6]}>
+              <Field type="string" name="a5" title="查询字段5" x-component="Input" />
+              <Field type="string" name="a6" title="查询字段6" x-component="Input" />
+            </FormItemGrid>
+            <FormButtonGroup style={{ minWidth: 150 }}>
+              <Submit>提交</Submit>​<Reset>重置</Reset>
             </FormButtonGroup>
           </SchemaForm>
         </Printer>
@@ -116,8 +93,9 @@ export default (): React.ReactNode => {
 
       <Card title={formatMessage({ id: 'formily.demo.intro' })}>
         <Paragraph>
-          <ul className="react-demo-ul"><li className="react-demo-li">多對一聯動其實就是一對一聯動，只不過作用的對像是同一個字段</li><li className="react-demo-li">BB 控制AA ​​顯示隱藏，CC 控制AA ​​的值</li></ul>
+          <ul><li>使用 FormItemGrid 可以實現網格佈局，如果加了 title 屬性，就能處理 FormItem 維度的網格佈局</li></ul>
         </Paragraph>
       </Card>
-  </PageHeaderWrapper>
-)};
+    </PageHeaderWrapper>
+  )
+};

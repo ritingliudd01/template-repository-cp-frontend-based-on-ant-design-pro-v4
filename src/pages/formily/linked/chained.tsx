@@ -65,23 +65,24 @@ const components = {
   Transfer
 }
 
+const { onFieldValueChange$ } = FormEffectHooks
+
+const useChainEffects = () => {
+  const { setFieldState } = createFormActions()
+  onFieldValueChange$('aa').subscribe(({ value }) => {
+    setFieldState('bb', state => {
+      state.visible = value
+    })
+  })
+  onFieldValueChange$('bb').subscribe(({ value }) => {
+    setFieldState('cc', state => {
+      state.visible = value
+    })
+  })
+}
+
 export default (): React.ReactNode => {
   const { formatMessage } = useIntl();
-  const { onFieldValueChange$ } = FormEffectHooks
-
-  const useManyToOneEffects = () => {
-    const { setFieldState } = createFormActions()
-    onFieldValueChange$('bb').subscribe(({ value }) => {
-      setFieldState('aa', state => {
-        state.visible = value
-      })
-    })
-    onFieldValueChange$('cc').subscribe(({ value }) => {
-      setFieldState('aa', state => {
-        state.value = value
-      })
-    })
-  }
 
   return (
     <PageHeaderWrapper>
@@ -92,9 +93,21 @@ export default (): React.ReactNode => {
             onSubmit={values => {
               console.log(values)
             }}
-            effects={useManyToOneEffects}
+            effects={() => {
+              useChainEffects()
+            }}
           >
-            <Field type="string" name="aa" title="AA" x-component="Input" />
+            <Field
+              type="string"
+              enum={[
+                { label: 'visible', value: true },
+                { label: 'hidden', value: false }
+              ]}
+              default={false}
+              name="aa"
+              title="AA"
+              x-component="Select"
+            />
             <Field
               type="string"
               enum={[
@@ -116,8 +129,9 @@ export default (): React.ReactNode => {
 
       <Card title={formatMessage({ id: 'formily.demo.intro' })}>
         <Paragraph>
-          <ul className="react-demo-ul"><li className="react-demo-li">多對一聯動其實就是一對一聯動，只不過作用的對像是同一個字段</li><li className="react-demo-li">BB 控制AA ​​顯示隱藏，CC 控制AA ​​的值</li></ul>
+          <ul className="react-demo-ul"><li className="react-demo-li">鍊式聯動，其實也是可以歸一化為一對一聯動</li><li className="react- demo-li">AA 控制BB 顯示隱藏，BB 控制CC 隱藏</li></ul>
         </Paragraph>
       </Card>
-  </PageHeaderWrapper>
-)};
+    </PageHeaderWrapper>
+  )
+};
